@@ -1,18 +1,49 @@
 import mongoose from 'mongoose';
 
-// Disable query buffering so requests don't hang 10 seconds if disconnected
-mongoose.set('bufferCommands', false);
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
 const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000
+  const uri = process.env.MONGO_URI;
+
+  if (!uri) {
+    const errorMsg = 'MONGO_URI is missing in environment variables. If deploying on Vercel, please add MONGO_URI in your Vercel Project Settings -> Environment Variables.';
+    console.error(`❌ ${errorMsg}`);
+    throw new Error(errorMsg);
+  }
+
+  if (cached.conn && mongoose.connection.readyState === 1) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: true,
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
+    };
+
+    cached.promise = mongoose.connect(uri, opts).then((mongooseInstance) => {
+      console.log(`✅ MongoDB Connected: ${mongooseInstance.connection.host}`);
+      return mongooseInstance;
+    }).catch((err) => {
+      cached.promise = null;
+      console.error(`❌ MongoDB Connection Error: ${err.message}`);
+      throw err;
     });
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error(`❌ MongoDB Atlas Connection Error: ${error.message}`);
-    console.log('📌 ACTION REQUIRED: Add IP "0.0.0.0/0" in MongoDB Atlas Dashboard -> Network Access -> IP Access List.');
+  }
+
+  try {
+    cached.conn = await cached.promise;
+    return cached.conn;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
   }
 };
 
 export default connectDB;
+

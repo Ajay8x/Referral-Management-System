@@ -8,9 +8,12 @@ import referralRoutes from './routes/referralRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 
 dotenv.config();
+dotenv.config({ path: path.join(process.cwd(), 'server', '.env') });
 
-// Connect to MongoDB
-connectDB();
+// Warm-up database connection
+connectDB().catch((err) => {
+  console.warn('⚠️ MongoDB initial connection attempt warning:', err.message);
+});
 
 const app = express();
 
@@ -46,22 +49,47 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static uploads if directory exists
 const uploadDir = path.join(process.cwd(), 'uploads');
-app.use('/uploads', express.static(uploadDir));
+try {
+  app.use('/uploads', express.static(uploadDir));
+} catch (e) {
+  // Ignore static folder errors in serverless
+}
+
+// Health check route
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    mongoConfigured: Boolean(process.env.MONGO_URI)
+  });
+});
+
+// Middleware: Ensure database is connected before processing API data routes
+app.use(async (req, res, next) => {
+  if (!req.path.startsWith('/api')) {
+    return next();
+  }
+  try {
+    await connectDB();
+    next();
+  } catch (dbError) {
+    console.error('❌ Database connection failed during request:', dbError.message);
+    return res.status(503).json({
+      success: false,
+      message: `Database Connection Failed: ${dbError.message}. Make sure MONGO_URI is set in Vercel Environment Variables and IP 0.0.0.0/0 is whitelisted in MongoDB Atlas.`
+    });
+  }
+});
 
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/referrals', referralRoutes);
 app.use('/api/upload', uploadRoutes);
 
-// Health check route
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() });
-});
-
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('Unhandled Error:', err.stack);
-  res.status(500).json({
+  console.error('Unhandled Error:', err.stack || err.message);
+  res.status(err.status || 500).json({
     success: false,
     message: err.message || 'Internal Server Error'
   });
