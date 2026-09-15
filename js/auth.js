@@ -32,6 +32,18 @@ function setButtonLoading(button, loading, normalText) {
     button.textContent = loading ? "Please wait..." : normalText;
 }
 
+async function parseJsonResponse(response) {
+    const text = await response.text();
+    try {
+        return JSON.parse(text);
+    } catch (e) {
+        if (!response.ok) {
+            throw new Error(`Server Error (${response.status}): Please ensure MONGO_URI and environment variables are configured in Vercel Settings.`);
+        }
+        throw new Error("Invalid server response format.");
+    }
+}
+
 // =========================================================
 // LOGIN
 // =========================================================
@@ -62,6 +74,7 @@ if (loginForm) {
             return;
         }
 
+        const loginButton = loginForm.querySelector('button[type="submit"]');
         setButtonLoading(loginButton, true, "Login");
         showMessage("Signing in...", "success");
 
@@ -72,7 +85,7 @@ if (loginForm) {
                 body: JSON.stringify({ mobile, password })
             });
 
-            const data = await response.json();
+            const data = await parseJsonResponse(response);
 
             if (!response.ok || !data.success) {
                 throw new Error(data.message || "Invalid mobile number or password.");
@@ -87,6 +100,7 @@ if (loginForm) {
         } catch (error) {
             console.error("RBSK Login Error:", error);
             showMessage(error.message || "Unable to sign in. Please try again.");
+            const loginButton = loginForm.querySelector('button[type="submit"]');
             setButtonLoading(loginButton, false, "Login");
         }
     });
@@ -148,7 +162,7 @@ if (registerForm) {
                 body: JSON.stringify({ name, mobile, password })
             });
 
-            const data = await response.json();
+            const data = await parseJsonResponse(response);
 
             if (!response.ok || !data.success) {
                 throw new Error(data.message || "Registration failed. Please try again.");

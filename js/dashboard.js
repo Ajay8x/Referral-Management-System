@@ -32,6 +32,18 @@ const DEFECT_OPTIONS = [
 ];
 
 // HELPERS
+async function parseJsonResponse(response) {
+    const text = await response.text();
+    try {
+        return JSON.parse(text);
+    } catch (e) {
+        if (!response.ok) {
+            throw new Error(`Server Error (${response.status}): ${text.slice(0, 100) || 'Check database & Vercel configuration'}`);
+        }
+        throw new Error("Invalid server response format.");
+    }
+}
+
 function $(id) {
     return document.getElementById(id);
 }
@@ -315,7 +327,7 @@ async function uploadFileAPI(file, fileType) {
         body: formData
     });
 
-    const data = await res.json();
+    const data = await parseJsonResponse(res);
     if (!res.ok || !data.success) {
         throw new Error(data.message || "File upload failed");
     }
@@ -493,7 +505,7 @@ $("referralForm")?.addEventListener("submit", async event => {
             body: JSON.stringify(referralData)
         });
 
-        const data = await res.json();
+        const data = await parseJsonResponse(res);
         if (!res.ok || !data.success) {
             throw new Error(data.message || "Failed to save referral");
         }
@@ -584,7 +596,7 @@ $("statusForm")?.addEventListener("submit", async event => {
             headers: authHeaders(),
             body: JSON.stringify(payload)
         });
-        const data = await res.json();
+        const data = await parseJsonResponse(res);
         if (!res.ok || !data.success) throw new Error(data.message || "Status update failed");
 
         hideModal("statusModal");
@@ -719,7 +731,7 @@ $("confirmDelete")?.addEventListener("click", async () => {
             method: "DELETE",
             headers: authHeaders()
         });
-        const data = await res.json();
+        const data = await parseJsonResponse(res);
         if (!res.ok || !data.success) throw new Error(data.message || "Delete failed");
 
         deleteReferralId = null;
@@ -825,7 +837,7 @@ async function loadRecords() {
         const res = await fetch(`${API_BASE}/referrals`, {
             headers: authHeaders()
         });
-        const data = await res.json();
+        const data = await parseJsonResponse(res);
         if (!res.ok || !data.success) throw new Error(data.message || "Failed to load records");
 
         referrals = data.data || [];
@@ -863,7 +875,7 @@ async function checkAuthAndInit() {
         const res = await fetch(`${API_BASE}/auth/me`, {
             headers: authHeaders()
         });
-        const data = await res.json();
+        const data = await parseJsonResponse(res);
         if (!res.ok || !data.success) {
             throw new Error("Session expired");
         }
