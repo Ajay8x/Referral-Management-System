@@ -8,23 +8,11 @@ const generateToken = (id) => {
   });
 };
 
-// Check DB connection helper
-const checkDBConnection = () => {
-  return mongoose.connection.readyState === 1;
-};
-
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
 export const registerUser = async (req, res) => {
   try {
-    if (!checkDBConnection()) {
-      return res.status(503).json({
-        success: false,
-        message: 'Database connection failed. Please ensure your IP is whitelisted (0.0.0.0/0) in MongoDB Atlas Network Access.'
-      });
-    }
-
     const { name, mobile, password } = req.body;
 
     if (!name || !mobile || !password) {
@@ -76,13 +64,6 @@ export const registerUser = async (req, res) => {
 // @access  Public
 export const loginUser = async (req, res) => {
   try {
-    if (!checkDBConnection()) {
-      return res.status(503).json({
-        success: false,
-        message: 'Database connection failed. Please ensure your IP is whitelisted (0.0.0.0/0) in MongoDB Atlas Network Access.'
-      });
-    }
-
     const { mobile, password } = req.body;
 
     if (!mobile || !password) {

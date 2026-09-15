@@ -2,15 +2,23 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 import { v2 as cloudinary } from 'cloudinary';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Ensure uploads directory exists for local fallback
-const uploadDir = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+const uploadDir = process.env.VERCEL || process.env.NODE_ENV === 'production' 
+  ? os.tmpdir() 
+  : path.join(process.cwd(), 'uploads');
+
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (e) {
+  // Ignore filesystem errors in serverless read-only contexts
 }
 
 // Multer storage config
