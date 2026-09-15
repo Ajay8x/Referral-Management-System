@@ -2,9 +2,10 @@
 // SHREE RBSK - AUTH.JS (NODE.JS + MONGODB BACKEND)
 // =========================================================
 
-const API_BASE = window.location.origin.includes(':5000') || window.location.origin.includes(':3000')
-    ? '/api'
-    : 'http://localhost:5000/api';
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    && !(window.location.port === '5000' || window.location.port === '3000')
+    ? 'http://localhost:5000/api'
+    : '/api';
 
 // COMMON HELPERS
 function cleanMobile(value) {
