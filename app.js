@@ -22,9 +22,24 @@ connectDB().catch((err) => {
 
 const app = express();
 
-// Set View Engine to EJS
+// Vercel Serverless URL Normalizer (recovers original path if rewritten by Vercel)
+app.use((req, res, next) => {
+  const original = req.headers['x-matched-path'] || req.headers['x-invoke-path'] || req.headers['x-forwarded-uri'];
+  if (original && (req.url === '/api/index.js' || req.url.startsWith('/api/index.js'))) {
+    req.url = original;
+  } else if (req.url.startsWith('/api/index.js')) {
+    req.url = req.url.replace('/api/index.js', '') || '/';
+  }
+  next();
+});
+
+// Set View Engine to EJS with robust path resolution
+const viewsPath = path.resolve(process.cwd(), 'views');
+const publicPath = path.resolve(process.cwd(), 'public');
+const uploadsPath = path.resolve(process.cwd(), 'uploads');
+
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', viewsPath);
 
 // Middlewares
 app.use(cors({
@@ -36,14 +51,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Static files (public and uploads)
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(publicPath));
+app.use('/uploads', express.static(uploadsPath));
 
 // Middleware: Pass user from locals or token info if available
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;
   next();
 });
+
 
 // Health check API
 app.get('/api/health', (req, res) => {
