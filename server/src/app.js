@@ -55,6 +55,15 @@ try {
   // Ignore static folder errors in serverless
 }
 
+// Root status route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'Shree RBSK Referral Management Backend API is running',
+    version: '1.0.0',
+    health: '/api/health'
+  });
+});
+
 // Health check route
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -63,6 +72,7 @@ app.get('/api/health', (req, res) => {
     mongoConfigured: Boolean(process.env.MONGO_URI)
   });
 });
+
 
 // Middleware: Ensure database is connected before processing API data routes
 app.use(async (req, res, next) => {

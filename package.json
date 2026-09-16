@@ -5,22 +5,16 @@
   "type": "module",
   "main": "api/index.js",
   "scripts": {
-    "start": "node server/src/server.js",
-    "dev": "nodemon server/src/server.js",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run server:dev\" \"npm run client\"",
+    "start": "npm run start --prefix server",
     "server": "npm run start --prefix server",
     "server:dev": "npm run dev --prefix server",
     "client": "npm run dev --prefix client",
-    "client:build": "npm run build --prefix client"
+    "client:build": "npm run build --prefix client",
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.2",
-    "cloudinary": "^2.5.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.9.5",
-    "multer": "^1.4.5-lts.1"
+    "concurrently": "^9.1.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
