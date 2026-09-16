@@ -1,0 +1,247 @@
+<div id="newReferralModal" class="modal-backdrop" style="display: none;">
+  <div class="modal-box modal-lg">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-icon-badge" id="referralModalIcon">
+          <i class="fa-solid fa-user-plus"></i>
+        </div>
+        <div>
+          <h3 class="modal-title" id="referralModalTitle">New Child Referral</h3>
+          <p class="modal-desc" id="referralModalDesc">Register a child diagnosed with health conditions under RBSK</p>
+        </div>
+      </div>
+      <button type="button" class="btn-close-modal" onclick="closeModal('newReferralModal')">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form id="newReferralForm" onsubmit="handleReferralSubmit(event)" enctype="multipart/form-data">
+      <input type="hidden" id="editReferralId" name="editReferralId" value="" />
+
+      <div class="modal-body">
+
+        <!-- Section 1: Child Basic Details -->
+        <div class="form-section">
+          <h4 class="section-title"><i class="fa-solid fa-child"></i> 1. Child Details</h4>
+          <div class="form-grid grid-3">
+            <div class="form-group">
+              <label for="childName">Child Name <span class="req">*</span></label>
+              <input type="text" id="childName" name="childName" required placeholder="Enter child's full name" />
+            </div>
+
+            <div class="form-group">
+              <label for="sex">Gender / Sex <span class="req">*</span></label>
+              <select id="sex" name="sex" required>
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="dob">Date of Birth <span class="req">*</span></label>
+              <input type="date" id="dob" name="dob" required />
+            </div>
+          </div>
+
+          <div class="form-grid grid-3">
+            <div class="form-group">
+              <label for="birthCertificateNo">Birth Certificate No.</label>
+              <input type="text" id="birthCertificateNo" name="birthCertificateNo" placeholder="e.g. BC-987654" />
+            </div>
+
+            <div class="form-group">
+              <label for="weight">Weight (kg)</label>
+              <input type="text" id="weight" name="weight" placeholder="e.g. 12.5" />
+            </div>
+
+            <div class="form-group">
+              <label for="height">Height (cm)</label>
+              <input type="text" id="height" name="height" placeholder="e.g. 92" />
+            </div>
+          </div>
+
+          <div class="form-grid grid-2">
+            <div class="form-group">
+              <label for="villageName">Village / Ward Name</label>
+              <input type="text" id="villageName" name="villageName" placeholder="Enter village or locality" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Parents & Identity -->
+        <div class="form-section">
+          <h4 class="section-title"><i class="fa-solid fa-people-roof"></i> 2. Parents & Identity</h4>
+          <div class="form-grid grid-2">
+            <div class="form-group">
+              <label for="fatherName">Father's Name</label>
+              <input type="text" id="fatherName" name="fatherName" placeholder="Enter father's name" />
+            </div>
+
+            <div class="form-group">
+              <label for="fatherAadhaar">Father's Aadhaar No.</label>
+              <input type="text" id="fatherAadhaar" name="fatherAadhaar" maxlength="12" placeholder="12-digit Aadhaar" />
+            </div>
+          </div>
+
+          <div class="form-grid grid-2">
+            <div class="form-group">
+              <label for="motherName">Mother's Name</label>
+              <input type="text" id="motherName" name="motherName" placeholder="Enter mother's name" />
+            </div>
+
+            <div class="form-group">
+              <label for="motherAadhaar">Mother's Aadhaar No.</label>
+              <input type="text" id="motherAadhaar" name="motherAadhaar" maxlength="12" placeholder="12-digit Aadhaar" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Institute Details -->
+        <div class="form-section">
+          <h4 class="section-title"><i class="fa-solid fa-school"></i> 3. Institute / Center Details</h4>
+          <div class="form-grid grid-3">
+            <div class="form-group">
+              <label for="instituteType">Institute Type <span class="req">*</span></label>
+              <select id="instituteType" name="instituteType" required onchange="toggleInstituteFields(this.value)">
+                <option value="School">School (6 - 18 Yrs)</option>
+                <option value="AWC">Anganwadi Center - AWC (0 - 6 Yrs)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="instituteName">School / AWC Name <span class="req">*</span></label>
+              <input type="text" id="instituteName" name="instituteName" required placeholder="Enter school / center name" />
+            </div>
+
+            <div class="form-group" id="classFieldGroup">
+              <label for="className">Class / Grade</label>
+              <input type="text" id="className" name="className" placeholder="e.g. Class 4B" />
+            </div>
+
+            <div class="form-group" id="awcFieldGroup" style="display: none;">
+              <label for="awcWorkerNumber">AWC Worker Contact</label>
+              <input type="text" id="awcWorkerNumber" name="awcWorkerNumber" placeholder="Anganwadi worker mobile" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Health Problem / Defects (Official RBSK 4Ds List) -->
+        <div class="form-section">
+          <h4 class="section-title"><i class="fa-solid fa-stethoscope"></i> 4. Defect / Health Problem (RBSK 4Ds)</h4>
+          <p class="section-hint">Select all detected conditions:</p>
+          <div class="defect-checkbox-grid">
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="1 - Neural Tube Defect" />
+              <span>1 - Neural Tube Defect</span>
+            </label>
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="2 - Downs Syndrome" />
+              <span>2 - Downs Syndrome</span>
+            </label>
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="3 - Cleft Lip and Palate" />
+              <span>3 - Cleft Lip and Palate</span>
+            </label>
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="4 - Talipes (club foot)" />
+              <span>4 - Talipes (club foot)</span>
+            </label>
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="5 - Developmental Dysplasia of Hip" />
+              <span>5 - Developmental Dysplasia of Hip</span>
+            </label>
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="6 - Congenital Cataract" />
+              <span>6 - Congenital Cataract</span>
+            </label>
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="7 - Congenital Deafness" />
+              <span>7 - Congenital Deafness</span>
+            </label>
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="8 - Congenital Heart Disease" />
+              <span>8 - Congenital Heart Disease</span>
+            </label>
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="9 - Retinopathy of Prematurity (only at DH)" />
+              <span>9 - Retinopathy of Prematurity</span>
+            </label>
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="47 - Congenital Ear Problems" />
+              <span>47 - Congenital Ear Problems</span>
+            </label>
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="48 - Neck and Face Defects" />
+              <span>48 - Neck and Face Defects</span>
+            </label>
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="50 - Congenital Eye Problems" />
+              <span>50 - Congenital Eye Problems</span>
+            </label>
+            <label class="defect-chip">
+              <input type="checkbox" name="defects" value="Other" id="defectOtherCheckbox" onchange="toggleOtherDefect(this.checked)" />
+              <span>Other Condition</span>
+            </label>
+          </div>
+
+          <div class="form-group mt-3" id="otherDefectGroup" style="display: none;">
+            <label for="otherDefect">Specify Other Defect / Condition Details</label>
+            <input type="text" id="otherDefect" name="otherDefect" placeholder="Describe the health condition" />
+          </div>
+        </div>
+
+        <!-- Section 5: Contact Numbers -->
+        <div class="form-section">
+          <h4 class="section-title"><i class="fa-solid fa-phone-volume"></i> 5. Contact Numbers</h4>
+          <div class="form-grid grid-3">
+            <div class="form-group">
+              <label for="mobile1">Primary Mobile <span class="req">*</span></label>
+              <input type="tel" id="mobile1" name="mobile1" required maxlength="10" placeholder="10-digit primary mobile" />
+            </div>
+
+            <div class="form-group">
+              <label for="mobile2">Alternate Mobile 2</label>
+              <input type="tel" id="mobile2" name="mobile2" maxlength="10" placeholder="Alternate mobile" />
+            </div>
+
+            <div class="form-group">
+              <label for="mobile3">Alternate Mobile 3</label>
+              <input type="tel" id="mobile3" name="mobile3" maxlength="10" placeholder="Relative / Neighbor mobile" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 6: Photo & File Uploads -->
+        <div class="form-section">
+          <h4 class="section-title"><i class="fa-solid fa-paperclip"></i> 6. Child Photo & Medical Documents</h4>
+          <div class="form-grid grid-2">
+            <div class="form-group">
+              <label for="childPhoto">Child Photo</label>
+              <input type="file" id="childPhoto" name="childPhoto" accept="image/*" />
+              <span class="file-hint">JPEG, PNG up to 10MB</span>
+            </div>
+
+            <div class="form-group">
+              <label for="documents">Prescription / Diagnostic Reports</label>
+              <input type="file" id="documents" name="documents" multiple accept="image/*,application/pdf" />
+              <span class="file-hint">PDF or Images up to 10MB</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="referralFormAlert" class="alert-box" style="display: none;"></div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" onclick="closeModal('newReferralModal')">Cancel</button>
+        <button type="submit" id="btnSubmitReferral" class="btn-primary">
+          <i class="fa-solid fa-check"></i>
+          <span id="btnSubmitReferralText">Save Child Referral</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

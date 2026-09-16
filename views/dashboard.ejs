@@ -1,0 +1,256 @@
+<%- include('partials/head', { title: 'Dashboard | Shree RBSK Referral System', bodyClass: 'dashboard-body' }) %>
+<%- include('partials/navbar') %>
+
+<main class="dashboard-main">
+  <div class="dashboard-container">
+
+    <!-- Top Action Banner -->
+    <div class="dashboard-hero">
+      <div class="hero-left">
+        <h1 class="page-title">Referral Management Dashboard</h1>
+        <p class="page-subtitle">Track, refer and monitor treatment progress of screened children under RBSK</p>
+      </div>
+      <div class="hero-right">
+        <button type="button" class="btn-primary btn-add-referral" onclick="openNewReferralModal()">
+          <i class="fa-solid fa-plus"></i>
+          <span>Add New Referral</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary Stats Cards -->
+    <section class="stats-grid">
+      <div class="stat-card stat-total <%= filters.status === 'all' ? 'active-stat' : '' %>" id="statCard-all" onclick="filterByStat('all')">
+        <div class="stat-icon-wrap">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Total Referrals</span>
+          <span class="stat-value" id="statTotal"><%= stats.total %></span>
+        </div>
+      </div>
+
+      <div class="stat-card stat-pending <%= filters.status === 'Pending' ? 'active-stat' : '' %>" id="statCard-Pending" onclick="filterByStat('Pending')">
+        <div class="stat-icon-wrap">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Pending</span>
+          <span class="stat-value" id="statPending"><%= stats.pending %></span>
+        </div>
+      </div>
+
+      <div class="stat-card stat-referred <%= filters.status === 'Referred' ? 'active-stat' : '' %>" id="statCard-Referred" onclick="filterByStat('Referred')">
+        <div class="stat-icon-wrap">
+          <i class="fa-solid fa-hospital"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Referred</span>
+          <span class="stat-value" id="statReferred"><%= stats.referred %></span>
+        </div>
+      </div>
+
+      <div class="stat-card stat-started <%= filters.status === 'Treatment Started' ? 'active-stat' : '' %>" id="statCard-TreatmentStarted" onclick="filterByStat('Treatment Started')">
+        <div class="stat-icon-wrap">
+          <i class="fa-solid fa-heart-circle-bolt"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Treatment Started</span>
+          <span class="stat-value" id="statStarted"><%= stats.started %></span>
+        </div>
+      </div>
+
+      <div class="stat-card stat-completed <%= filters.status === 'Completed' ? 'active-stat' : '' %>" id="statCard-Completed" onclick="filterByStat('Completed')">
+        <div class="stat-icon-wrap">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Completed</span>
+          <span class="stat-value" id="statCompleted"><%= stats.completed %></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filters & Search Toolbar -->
+    <section class="filter-toolbar">
+      <div class="filter-form">
+        <div class="search-input-wrap">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search by child name, father, village, defect, mobile..."
+            value="<%= filters.search %>"
+            oninput="liveFilterRecords()"
+          />
+          <button type="button" id="btnClearSearch" class="btn-clear-search" onclick="clearSearch()" style="<%= filters.search ? 'display:block;' : 'display:none;' %>" title="Clear Search">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="filter-selects">
+          <div class="select-wrap">
+            <select id="statusFilter" onchange="liveFilterRecords()">
+              <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All Statuses</option>
+              <option value="Pending" <%= filters.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+              <option value="Referred" <%= filters.status === 'Referred' ? 'selected' : '' %>>Referred</option>
+              <option value="Treatment Started" <%= filters.status === 'Treatment Started' ? 'selected' : '' %>>Treatment Started</option>
+              <option value="Completed" <%= filters.status === 'Completed' ? 'selected' : '' %>>Completed</option>
+            </select>
+          </div>
+
+          <div class="select-wrap">
+            <select id="instituteFilter" onchange="liveFilterRecords()">
+              <option value="all" <%= filters.instituteType === 'all' ? 'selected' : '' %>>All Institutes</option>
+              <option value="School" <%= filters.instituteType === 'School' ? 'selected' : '' %>>Schools (6-18 Yrs)</option>
+              <option value="AWC" <%= filters.instituteType === 'AWC' ? 'selected' : '' %>>Anganwadi - AWC (0-6 Yrs)</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn-reset-filters" onclick="resetAllFilters()" title="Reset all filters">
+            <i class="fa-solid fa-rotate-left"></i> Reset
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Referral Cards Section -->
+    <section class="records-section">
+      <div class="records-header">
+        <div class="records-count" id="recordsCountText">
+          Showing <strong><%= referrals.length %></strong> referral<%= referrals.length === 1 ? '' : 's' %>
+        </div>
+      </div>
+
+      <div id="emptyState" class="empty-state-box" style="<%= referrals.length === 0 ? 'display:block;' : 'display:none;' %>">
+        <div class="empty-icon">
+          <i class="fa-solid fa-folder-open"></i>
+        </div>
+        <h3 id="emptyStateTitle">No Referrals Found</h3>
+        <p id="emptyStateDesc">
+          You haven't added any child referrals yet or no matches found. Click "Add New Referral" to get started.
+        </p>
+        <button type="button" class="btn-primary mt-3" onclick="openNewReferralModal()">
+          <i class="fa-solid fa-plus"></i> Add Child Referral
+        </button>
+      </div>
+
+      <div class="referrals-grid" id="referralsContainer">
+        <% referrals.forEach(function(item) { %>
+          <div
+            class="referral-card status-border-<%= item.status.toLowerCase().replace(/\s+/g, '-') %>"
+            id="card-<%= item._id %>"
+            data-id="<%= item._id %>"
+            data-status="<%= item.status %>"
+            data-institute="<%= item.instituteType %>"
+            data-search="<%= [item.childName, item.fatherName, item.motherName, item.villageName, item.instituteName, item.defect, item.otherDefect, item.mobile1, item.mobile2, item.mobile3, item.birthCertificateNo].filter(Boolean).join(' ').toLowerCase() %>"
+          >
+            <div class="card-top">
+              <div class="child-avatar <%= item.sex === 'Female' ? 'avatar-female' : 'avatar-male' %>">
+                <i class="fa-solid <%= item.sex === 'Female' ? 'fa-child-dress' : 'fa-child' %>"></i>
+              </div>
+              <div class="child-primary-info">
+                <h3 class="child-name"><%= item.childName %></h3>
+                <div class="child-meta-tags">
+                  <span class="meta-tag"><i class="fa-solid fa-venus-mars"></i> <%= item.sex %></span>
+                  <% if (item.dob) { %>
+                    <span class="meta-tag"><i class="fa-solid fa-cake-candles"></i> <%= item.dob %></span>
+                  <% } %>
+                </div>
+              </div>
+
+              <div class="status-badge status-<%= item.status.toLowerCase().replace(/\s+/g, '-') %>">
+                <%= item.status %>
+              </div>
+            </div>
+
+            <!-- Disease / Defects List -->
+            <div class="card-defect-box">
+              <span class="defect-label"><i class="fa-solid fa-stethoscope"></i> Condition / Defect:</span>
+              <div class="defect-tags">
+                <% if (item.defects && item.defects.length > 0) { %>
+                  <% item.defects.forEach(function(d) { %>
+                    <span class="defect-badge"><%= d %></span>
+                  <% }); %>
+                <% } else if (item.defect) { %>
+                  <span class="defect-badge"><%= item.defect %></span>
+                <% } else { %>
+                  <span class="defect-badge text-muted">None specified</span>
+                <% } %>
+                <% if (item.otherDefect) { %>
+                  <span class="defect-badge defect-other"><%= item.otherDefect %></span>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Information Grid -->
+            <div class="card-info-grid">
+              <div class="info-row">
+                <span class="info-title"><i class="fa-solid fa-school"></i> Institute:</span>
+                <span class="info-data"><%= item.instituteName %> (<%= item.instituteType %>)</span>
+              </div>
+
+              <% if (item.fatherName) { %>
+                <div class="info-row">
+                  <span class="info-title"><i class="fa-solid fa-person"></i> Father:</span>
+                  <span class="info-data"><%= item.fatherName %></span>
+                </div>
+              <% } %>
+
+              <% if (item.villageName) { %>
+                <div class="info-row">
+                  <span class="info-title"><i class="fa-solid fa-location-dot"></i> Village:</span>
+                  <span class="info-data"><%= item.villageName %></span>
+                </div>
+              <% } %>
+
+              <% if (item.mobile1) { %>
+                <div class="info-row">
+                  <span class="info-title"><i class="fa-solid fa-phone"></i> Contact:</span>
+                  <span class="info-data"><a href="tel:<%= item.mobile1 %>" class="phone-link"><%= item.mobile1 %></a></span>
+                </div>
+              <% } %>
+
+              <% if (item.hospitalName || item.privateHospital) { %>
+                <div class="info-row">
+                  <span class="info-title"><i class="fa-solid fa-hospital"></i> Hospital:</span>
+                  <span class="info-data highlight-hospital"><%= item.hospitalName || item.privateHospital %></span>
+                </div>
+              <% } %>
+            </div>
+
+            <!-- Card Action Bar: View, Edit, Status, Delete -->
+            <div class="card-actions">
+              <button type="button" class="btn-card-action btn-view" onclick="viewReferralDetails('<%= item._id %>')" title="View Full Details">
+                <i class="fa-solid fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-card-action btn-edit" onclick="editReferral('<%= item._id %>')" title="Edit Referral">
+                <i class="fa-solid fa-pen"></i> Edit
+              </button>
+              <button type="button" class="btn-card-action btn-update-status" onclick="openStatusModal('<%= item._id %>', '<%= item.childName %>', '<%= item.status %>')" title="Update Status">
+                <i class="fa-solid fa-arrows-rotate"></i> Status
+              </button>
+              <button type="button" class="btn-card-action btn-delete" onclick="openDeleteModal('<%= item._id %>', '<%= item.childName %>')" title="Delete Referral">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- Modals -->
+<%- include('partials/newReferralModal') %>
+<%- include('partials/statusModal') %>
+<%- include('partials/viewDetailsModal') %>
+<%- include('partials/deleteModal') %>
+
+<script>
+  // Expose initial referrals dataset for instant client responsiveness
+  window.__INITIAL_REFERRALS__ = <%- JSON.stringify(referrals) %>;
+</script>
+<script src="/js/dashboard.js"></script>
+<%- include('partials/footer') %>

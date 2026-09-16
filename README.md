@@ -1,80 +1,80 @@
 # Shree RBSK Referral Management System
 
-Full-stack referral management application with a completely decoupled **Frontend (React + Vite)** and **Backend (Node.js + Express + MongoDB)**.
+Full-stack referral management application built with **Node.js, Express, EJS Template Engine, and MongoDB**.
 
 ---
 
-## 📁 Architecture & Folder Structure
+## 📁 Project Architecture & Folder Structure
 
 ```text
 refermanagement-main/
-├── server/               👉 BACKEND API (Express, Mongoose, JWT)
-│   ├── src/
-│   │   ├── config/       (Database & Environment config)
-│   │   ├── controllers/  (Auth, Referrals, Upload logic)
-│   │   ├── models/       (User, Referral Mongoose Schemas)
-│   │   ├── routes/       (REST API Endpoints)
-│   │   ├── app.js        (Express App Setup & Middlewares)
-│   │   └── server.js     (Backend HTTP Server - Port 5000)
-│   ├── .env              (Environment Variables)
-│   └── package.json
-│
-├── client/               👉 FRONTEND UI (React 18 + Vite + Lucide Icons)
-│   ├── src/
-│   │   ├── api/          (Axios API Client with Auth Interceptor)
-│   │   ├── components/   (Navbar, ReferralCard, FiltersBar, Modals)
-│   │   ├── context/      (AuthContext)
-│   │   ├── pages/        (DashboardPage, LoginPage, RegisterPage)
-│   │   ├── index.css     (Modern Custom CSS & Design Tokens)
-│   │   └── App.jsx
-│   ├── vite.config.js    (Port 3000 & Backend Proxy)
-│   └── package.json
-│
-└── legacy_static/        👉 (Archived original vanilla HTML/JS prototypes)
+├── config/
+│   └── db.js                 # MongoDB connection logic
+├── controllers/
+│   ├── authController.js     # User registration, login, logout, me
+│   ├── referralController.js # CRUD, status updates, search & filters
+│   └── uploadController.js   # File upload handling
+├── middleware/
+│   ├── auth.js               # Cookie & JWT auth protection (protectView, protect)
+│   └── upload.js             # Multer upload middleware (childPhoto, documents)
+├── models/
+│   ├── User.js               # User Schema (mobile, password hashing, roles)
+│   └── Referral.js           # Referral Schema (child info, defects, status, files)
+├── routes/
+│   ├── authRoutes.js         # /api/auth routes
+│   ├── referralRoutes.js     # /api/referrals routes
+│   ├── uploadRoutes.js       # /api/upload routes
+│   └── viewRoutes.js         # EJS Page rendering routes (/, /login, /register, /dashboard, /logout)
+├── views/
+│   ├── partials/
+│   │   ├── head.ejs          # Meta tags, fonts, CSS stylesheets
+│   │   ├── navbar.ejs        # Responsive navigation bar with user profile & logout
+│   │   ├── footer.ejs        # Footer info & branding
+│   │   ├── newReferralModal.ejs   # Modal to add new child referrals
+│   │   ├── statusModal.ejs        # Modal to update referral status
+│   │   └── viewDetailsModal.ejs   # Modal to view complete referral details
+│   ├── login.ejs             # Mobile-first Login page
+│   ├── register.ejs          # Registration page with validation
+│   ├── dashboard.ejs         # Dashboard with stat cards, search, filters & cards
+│   └── error.ejs             # 404 and error display
+├── public/
+│   ├── css/
+│   │   └── style.css         # Modern, glassmorphic responsive design
+│   └── js/
+│       ├── auth.js           # Client-side authentication logic
+│       └── dashboard.js      # Filter triggers, modal handlers, AJAX updates
+├── uploads/                  # Local storage for uploaded files
+├── .env                      # Environment configuration (MONGO_URI, JWT_SECRET, PORT)
+├── package.json              # Express, EJS, Mongoose, Cookie-Parser, Multer, etc.
+├── app.js                    # Express app configuration & middlewares
+└── server.js                 # HTTP server entry point (Port 5000)
 ```
 
 ---
 
 ## 🚀 How to Run
 
-### Option 1: Run Both Concurrently (Recommended)
-From the root directory:
+### 1. Install Dependencies (If not already installed)
+```bash
+npm install
+```
+
+### 2. Start the Application
 ```bash
 npm run dev
 ```
-- Backend starts at: `http://localhost:5000`
-- Frontend starts at: `http://localhost:3000`
+> Or production mode: `npm start`
+
+### 3. Open in Browser
+Visit: **`http://localhost:5000`**
 
 ---
 
-### Option 2: Run Separately (Alag-Alag)
+## 🔑 Features
 
-#### 1. Backend Server
-```bash
-cd server
-npm install
-npm run dev
-```
-Runs at: **`http://localhost:5000`**
-
-#### 2. Frontend Client
-Open a second terminal:
-```bash
-cd client
-npm install
-npm run dev
-```
-Runs at: **`http://localhost:3000`**
-
----
-
-## 🛠️ Root npm Scripts
-
-| Command | Action |
-|---|---|
-| `npm run dev` | Runs both Server and Client concurrently |
-| `npm run server:dev` | Runs backend in development mode (`nodemon`) |
-| `npm run server` | Runs backend in production mode |
-| `npm run client` | Runs frontend Vite dev server |
-| `npm run client:build` | Compiles frontend for production |
-| `npm run install:all` | Installs dependencies for root, server, and client |
+- **🔐 Mobile + Password Authentication**: Secure registration and login using 10-digit mobile number, bcrypt hashing, and HTTP-only JWT cookies.
+- **📊 Real-time Dashboard**: Dynamic stats for *Total*, *Pending*, *Referred*, *Treatment Started*, and *Completed* referrals.
+- **🔍 Search & Filter**: Search across child name, village, father name, hospital, defect, and filter by institute type (School / AWC) and treatment status.
+- **📝 Child Referral Management**: Comprehensive modal with conditional School/Anganwadi fields, defect tags (4Ds), contact details, and file uploads.
+- **🏥 Status & Treatment Tracking**: Track hospital referral (DEIC / Private Hospital), estimated expenditure, and status history dates.
+- **📱 Responsive UI**: Designed with modern CSS, glassmorphism touches, and responsive grid layouts for desktop and mobile devices.

@@ -1,0 +1,40 @@
+<div id="deleteModal" class="modal-backdrop" style="display: none;">
+  <div class="modal-box modal-md">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-icon-badge" style="background: #fee2e2; color: #ef4444;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <h3 class="modal-title">Delete Child Referral</h3>
+          <p class="modal-desc">This action cannot be undone</p>
+        </div>
+      </div>
+      <button type="button" class="btn-close-modal" onclick="closeModal('deleteModal')">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body text-center" style="padding: 2rem 1.5rem;">
+      <p style="font-size: 1rem; color: #334155;">
+        Are you sure you want to permanently delete the referral record for:
+      </p>
+      <div style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 0.75rem 0;" id="deleteChildName">
+        Child Name
+      </div>
+      <p style="font-size: 0.85rem; color: #64748b;">
+        All related medical notes, defect records, and status history will be removed.
+      </p>
+      <input type="hidden" id="deleteReferralId" />
+      <div id="deleteAlert" class="alert-box alert-error" style="display: none; margin-top: 1rem;"></div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" onclick="closeModal('deleteModal')">Cancel</button>
+      <button type="button" id="btnConfirmDelete" class="btn-primary" style="background: #ef4444; border-color: #dc2626;" onclick="confirmDeleteReferral()">
+        <i class="fa-solid fa-trash-can"></i>
+        <span>Yes, Delete</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,74 @@
+<%- include('partials/head', { title: 'Login | Shree RBSK Referral System', bodyClass: 'auth-page-body' }) %>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-brand-badge">
+        <i class="fa-solid fa-heart-pulse"></i>
+      </div>
+      <h2 class="auth-title">Welcome Back</h2>
+      <p class="auth-subtitle">Sign in to Shree RBSK Referral Management Portal</p>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert-box alert-error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span><%= error %></span>
+      </div>
+    <% } %>
+
+    <div id="loginAlert" class="alert-box" style="display: none;"></div>
+
+    <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+      <div class="form-group">
+        <label for="mobile">Mobile Number <span class="req">*</span></label>
+        <div class="input-with-icon">
+          <i class="fa-solid fa-phone input-icon"></i>
+          <input
+            type="tel"
+            id="mobile"
+            name="mobile"
+            placeholder="10-digit registered mobile"
+            required
+            maxlength="10"
+            pattern="[0-9]{10}"
+            autocomplete="tel"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="label-row">
+          <label for="password">Password <span class="req">*</span></label>
+        </div>
+        <div class="input-with-icon">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+            minlength="6"
+            autocomplete="current-password"
+          />
+          <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('password', this)" tabindex="-1">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" id="btnLogin" class="btn-primary btn-block">
+        <i class="fa-solid fa-right-to-bracket"></i>
+        <span>Sign In</span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Don't have an account? <a href="/register" class="auth-link">Create Account</a></p>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<%- include('partials/footer') %>

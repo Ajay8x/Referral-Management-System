@@ -1,0 +1,87 @@
+<%- include('partials/head', { title: 'Register | Shree RBSK Referral System', bodyClass: 'auth-page-body' }) %>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-brand-badge">
+        <i class="fa-solid fa-user-shield"></i>
+      </div>
+      <h2 class="auth-title">Create Account</h2>
+      <p class="auth-subtitle">Register as an RBSK Medical Officer / Field Staff</p>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert-box alert-error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span><%= error %></span>
+      </div>
+    <% } %>
+
+    <div id="registerAlert" class="alert-box" style="display: none;"></div>
+
+    <form id="registerForm" onsubmit="handleRegisterSubmit(event)">
+      <div class="form-group">
+        <label for="name">Full Name <span class="req">*</span></label>
+        <div class="input-with-icon">
+          <i class="fa-solid fa-user input-icon"></i>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Dr. / Mr. / Ms. Full Name"
+            required
+            autocomplete="name"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="mobile">Mobile Number <span class="req">*</span></label>
+        <div class="input-with-icon">
+          <i class="fa-solid fa-phone input-icon"></i>
+          <input
+            type="tel"
+            id="mobile"
+            name="mobile"
+            placeholder="10-digit mobile number"
+            required
+            maxlength="10"
+            pattern="[0-9]{10}"
+            autocomplete="tel"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Create Password <span class="req">*</span></label>
+        <div class="input-with-icon">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Minimum 6 characters"
+            required
+            minlength="6"
+            autocomplete="new-password"
+          />
+          <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('password', this)" tabindex="-1">
+            <i class="fa-regular fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" id="btnRegister" class="btn-primary btn-block">
+        <i class="fa-solid fa-user-plus"></i>
+        <span>Create Account & Sign In</span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Already registered? <a href="/login" class="auth-link">Sign In</a></p>
+    </div>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<%- include('partials/footer') %>

@@ -1,0 +1,36 @@
+<header class="app-navbar">
+  <div class="navbar-container">
+    <a href="/dashboard" class="brand-logo">
+      <div class="logo-icon">
+        <i class="fa-solid fa-heart-pulse"></i>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">SHREE RBSK</span>
+        <span class="brand-subtitle">Referral Management</span>
+      </div>
+    </a>
+
+    <% if (typeof user !== 'undefined' && user) { %>
+      <div class="navbar-actions">
+        <div class="user-profile-badge">
+          <div class="avatar-circle">
+            <%= (user.name && user.name.length > 0) ? user.name.charAt(0).toUpperCase() : 'U' %>
+          </div>
+          <div class="user-details-mini">
+            <span class="user-name"><%= user.name %></span>
+            <span class="user-role"><i class="fa-solid fa-phone"></i> <%= user.mobile %></span>
+          </div>
+        </div>
+        <a href="/logout" class="btn-logout" title="Logout">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    <% } else { %>
+      <div class="navbar-auth-links">
+        <a href="/login" class="nav-link <%= currentPath === '/login' ? 'active' : '' %>">Login</a>
+        <a href="/register" class="btn-primary-sm <%= currentPath === '/register' ? 'active' : '' %>">Register</a>
+      </div>
+    <% } %>
+  </div>
+</header>

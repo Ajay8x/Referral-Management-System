@@ -1,0 +1,22 @@
+<%- include('partials/head', { title: typeof title !== 'undefined' ? title : 'Error | Shree RBSK', bodyClass: 'auth-page-body' }) %>
+
+<div class="auth-wrapper">
+  <div class="auth-card text-center">
+    <div class="error-badge-icon">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <h2 class="auth-title"><%= typeof title !== 'undefined' ? title : 'An Error Occurred' %></h2>
+    <p class="auth-subtitle mt-2"><%= typeof message !== 'undefined' ? message : 'Something went wrong. Please try again.' %></p>
+
+    <div class="mt-4">
+      <a href="/dashboard" class="btn-primary">
+        <i class="fa-solid fa-house"></i> Return to Dashboard
+      </a>
+      <a href="/login" class="btn-secondary ml-2">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+      </a>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

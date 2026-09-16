@@ -1,0 +1,83 @@
+<div id="statusModal" class="modal-backdrop" style="display: none;">
+  <div class="modal-box modal-md">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-icon-badge status-icon-badge">
+          <i class="fa-solid fa-arrows-rotate"></i>
+        </div>
+        <div>
+          <h3 class="modal-title">Update Referral Status</h3>
+          <p class="modal-desc" id="statusModalChildName">Updating child treatment status</p>
+        </div>
+      </div>
+      <button type="button" class="btn-close-modal" onclick="closeModal('statusModal')">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form id="statusForm" onsubmit="handleStatusSubmit(event)">
+      <input type="hidden" id="statusReferralId" name="referralId" />
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="statusSelect">New Status <span class="req">*</span></label>
+          <select id="statusSelect" name="status" required onchange="handleStatusChange(this.value)">
+            <option value="Pending">Pending</option>
+            <option value="Referred">Referred</option>
+            <option value="Treatment Started">Treatment Started</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="statusDate">Status Effective Date <span class="req">*</span></label>
+          <input type="date" id="statusDate" name="statusDate" required />
+        </div>
+
+        <!-- Conditional Referred Fields -->
+        <div id="referredFieldsGroup" style="display: none;">
+          <div class="form-group">
+            <label for="referType">Referral Facility Type</label>
+            <select id="referType" name="referType" onchange="handleReferTypeChange(this.value)">
+              <option value="DEIC">DEIC (District Early Intervention Centre)</option>
+              <option value="Private Hospital">Empanelled / Private Hospital</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="privateHospitalGroup" style="display: none;">
+            <label for="privateHospital">Empanelled Hospital Name</label>
+            <select id="privateHospital" name="privateHospital" onchange="handlePrivateHospitalChange(this.value)">
+              <option value="">Select Hospital</option>
+              <option value="AIIMS">AIIMS Hospital</option>
+              <option value="Fortis Healthcare">Fortis Healthcare</option>
+              <option value="Apollo Hospital">Apollo Hospital</option>
+              <option value="Max Super Speciality">Max Super Speciality</option>
+              <option value="Narayana Health">Narayana Health</option>
+              <option value="Other">Other Hospital</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="otherHospitalNameGroup" style="display: none;">
+            <label for="otherHospitalName">Enter Hospital Name</label>
+            <input type="text" id="otherHospitalName" name="otherHospitalName" placeholder="Type hospital name" />
+          </div>
+
+          <div class="form-group">
+            <label for="estimatedExpenditure">Estimated Treatment Expenditure (₹)</label>
+            <input type="number" id="estimatedExpenditure" name="estimatedExpenditure" placeholder="e.g. 45000" />
+          </div>
+        </div>
+
+        <div id="statusFormAlert" class="alert-box" style="display: none;"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" onclick="closeModal('statusModal')">Cancel</button>
+        <button type="submit" id="btnUpdateStatusSubmit" class="btn-primary">
+          <i class="fa-solid fa-save"></i>
+          <span>Update Status</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

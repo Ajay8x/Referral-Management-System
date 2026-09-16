@@ -1,20 +1,24 @@
 {
   "name": "shree-rbsk-referral-system",
   "version": "1.0.0",
-  "description": "Shree RBSK Referral Management Full-Stack Node.js & React Application",
+  "description": "Shree RBSK Referral Management Full-Stack Node.js, Express & EJS Application",
   "type": "module",
-  "main": "api/index.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run server:dev\" \"npm run client\"",
-    "start": "npm run start --prefix server",
-    "server": "npm run start --prefix server",
-    "server:dev": "npm run dev --prefix server",
-    "client": "npm run dev --prefix client",
-    "client:build": "npm run build --prefix client",
-    "install:all": "npm install && npm install --prefix server && npm install --prefix client"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "concurrently": "^9.1.2"
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.5.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

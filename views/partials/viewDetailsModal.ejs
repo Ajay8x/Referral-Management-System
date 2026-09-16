@@ -1,0 +1,37 @@
+<div id="viewDetailsModal" class="modal-backdrop" style="display: none;">
+  <div class="modal-box modal-lg">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-icon-badge info-icon-badge">
+          <i class="fa-solid fa-address-card"></i>
+        </div>
+        <div>
+          <h3 class="modal-title" id="viewModalTitle">Child Referral Details</h3>
+          <p class="modal-desc" id="viewModalSubtitle">Complete profile & medical history</p>
+        </div>
+      </div>
+      <button type="button" class="btn-close-modal" onclick="closeModal('viewDetailsModal')">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" id="viewDetailsContent">
+      <div class="loading-spinner-box">
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+        <span>Loading child details...</span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" onclick="closeModal('viewDetailsModal')">Close</button>
+      <button type="button" class="btn-secondary" onclick="openEditFromView()">
+        <i class="fa-solid fa-pen"></i>
+        <span>Edit Referral</span>
+      </button>
+      <button type="button" id="btnEditFromView" class="btn-primary" onclick="openStatusFromView()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        <span>Update Status</span>
+      </button>
+    </div>
+  </div>
+</div>
