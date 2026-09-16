@@ -147,9 +147,15 @@
           >
             <div class="card-top">
               <div class="child-avatar <%= item.sex === 'Female' ? 'avatar-female' : 'avatar-male' %>">
-                <i class="fa-solid <%= item.sex === 'Female' ? 'fa-child-dress' : 'fa-child' %>"></i>
+                <% if (item.childPhoto && item.childPhoto.url) { %>
+                  <img src="<%= item.childPhoto.url %>" alt="<%= item.childName %>" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';" />
+                  <i class="fa-solid <%= item.sex === 'Female' ? 'fa-child-dress' : 'fa-child' %>" style="display: none;"></i>
+                <% } else { %>
+                  <i class="fa-solid <%= item.sex === 'Female' ? 'fa-child-dress' : 'fa-child' %>"></i>
+                <% } %>
               </div>
               <div class="child-primary-info">
+
                 <h3 class="child-name"><%= item.childName %></h3>
                 <div class="child-meta-tags">
                   <span class="meta-tag"><i class="fa-solid fa-venus-mars"></i> <%= item.sex %></span>

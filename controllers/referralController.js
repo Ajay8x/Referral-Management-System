@@ -1,4 +1,6 @@
 import Referral from '../models/Referral.js';
+import { processUploadedFile } from '../utils/uploader.js';
+
 
 // @desc    Get all referrals with filters, search, and stats
 // @route   GET /api/referrals
@@ -129,28 +131,20 @@ export const createReferral = async (req, res) => {
 
     let photoObj = null;
     if (req.files && req.files.childPhoto && req.files.childPhoto[0]) {
-      const f = req.files.childPhoto[0];
-      photoObj = {
-        url: `/uploads/${f.filename}`,
-        originalFilename: f.originalname,
-        bytes: f.size,
-        fileType: 'image'
-      };
+      photoObj = await processUploadedFile(req.files.childPhoto[0], req.user._id, 'image');
     } else if (childPhoto) {
       photoObj = childPhoto;
     }
 
     let docsList = [];
-    if (req.files && req.files.documents) {
-      docsList = req.files.documents.map(f => ({
-        url: `/uploads/${f.filename}`,
-        originalFilename: f.originalname,
-        bytes: f.size,
-        fileType: f.mimetype && f.mimetype.includes('pdf') ? 'pdf' : 'image'
-      }));
+    if (req.files && req.files.documents && req.files.documents.length > 0) {
+      const uploadPromises = req.files.documents.map(f => processUploadedFile(f, req.user._id, 'document'));
+      const uploadedResults = await Promise.all(uploadPromises);
+      docsList = uploadedResults.filter(Boolean);
     } else if (Array.isArray(documents)) {
       docsList = documents;
     }
+
 
     const referral = await Referral.create({
       user: req.user._id,
@@ -262,28 +256,19 @@ export const updateReferral = async (req, res) => {
     };
 
     if (req.files && req.files.childPhoto && req.files.childPhoto[0]) {
-      const f = req.files.childPhoto[0];
-      updatedData.childPhoto = {
-        url: `/uploads/${f.filename}`,
-        originalFilename: f.originalname,
-        bytes: f.size,
-        fileType: 'image'
-      };
+      updatedData.childPhoto = await processUploadedFile(req.files.childPhoto[0], req.user._id, 'image');
     } else if (childPhoto) {
       updatedData.childPhoto = childPhoto;
     }
 
     if (req.files && req.files.documents && req.files.documents.length > 0) {
-      const newDocs = req.files.documents.map(f => ({
-        url: `/uploads/${f.filename}`,
-        originalFilename: f.originalname,
-        bytes: f.size,
-        fileType: f.mimetype && f.mimetype.includes('pdf') ? 'pdf' : 'image'
-      }));
+      const uploadPromises = req.files.documents.map(f => processUploadedFile(f, req.user._id, 'document'));
+      const newDocs = (await Promise.all(uploadPromises)).filter(Boolean);
       updatedData.documents = [...(referral.documents || []), ...newDocs];
     } else if (documents && Array.isArray(documents)) {
       updatedData.documents = documents;
     }
+
 
     referral = await Referral.findByIdAndUpdate(req.params.id, updatedData, { new: true, runValidators: true });
 
