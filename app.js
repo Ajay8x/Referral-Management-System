@@ -74,24 +74,61 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Page View Routes (EJS SSR)
-app.use('/', viewRoutes);
+// API Root info
+app.get(['/api', '/api/'], (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Shree RBSK Referral Management API is active',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      referrals: '/api/referrals',
+      upload: '/api/upload'
+    }
+  });
+});
 
 // API REST Endpoints
 app.use('/api/auth', authRoutes);
 app.use('/api/referrals', referralRoutes);
+app.use('/api/referral', referralRoutes); // Alias for singular referral
 app.use('/api/upload', uploadRoutes);
 
+// Auth shorthand aliases
+app.all('/api/login', (req, res, next) => {
+  req.url = '/login';
+  authRoutes(req, res, next);
+});
+app.all('/api/register', (req, res, next) => {
+  req.url = '/register';
+  authRoutes(req, res, next);
+});
+app.all('/api/logout', (req, res, next) => {
+  req.url = '/logout';
+  authRoutes(req, res, next);
+});
+
+
+// Page View Routes (EJS SSR)
+app.use('/', viewRoutes);
+
+
 // 404 Handler
+
 app.use((req, res) => {
   if (req.path.startsWith('/api')) {
-    return res.status(404).json({ success: false, message: 'API Route Not Found' });
+    return res.status(404).json({
+      success: false,
+      message: `API Route Not Found: ${req.method} ${req.originalUrl || req.path}`,
+      availableEndpoints: ['/api/health', '/api/auth/login', '/api/auth/register', '/api/referrals', '/api/upload']
+    });
   }
   res.status(404).render('error', {
     title: '404 - Page Not Found',
-    message: 'The page you are looking for does not exist or has been moved.'
+    message: `The requested URL '${req.originalUrl || req.path}' was not found.`
   });
 });
+
 
 // Global Error Handler
 app.use((err, req, res, next) => {
